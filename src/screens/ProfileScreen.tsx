@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Box,
   Camera,
-  Check,
   LogIn,
   LogOut,
-  MapPin,
   Package,
   ShieldCheck,
   Sparkles,
@@ -13,7 +11,6 @@ import {
   User,
   UserPlus,
 } from 'lucide-react';
-import { DAGUPAN_BARANGAYS } from '../data/dagupanCatalog';
 import {
   BouquetConfig,
   DagupanOrder,
@@ -27,7 +24,7 @@ interface ProfileScreenProps {
   savedBouquets: SavedBouquetRecord[];
   orders: DagupanOrder[];
   onNavigate: (screen: ScreenId) => void;
-  onUpdateProfile: (updates: {
+  onUpdateProfile?: (updates: {
     displayName: string;
     phone: string;
     barangay: string;
@@ -44,36 +41,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   savedBouquets,
   orders,
   onNavigate,
-  onUpdateProfile,
   onLoadBouquetIn3D,
   onLoadBouquetInAR,
   onDeleteSavedBouquet,
   onSignOut,
 }) => {
-  const [displayName, setDisplayName] = useState(user.displayName);
-  const [phone, setPhone] = useState(user.phone);
-  const [barangay, setBarangay] = useState(user.barangay);
-  const [streetAddress, setStreetAddress] = useState(user.streetAddress);
-  const [savedProfile, setSavedProfile] = useState(false);
-
-  useEffect(() => {
-    setDisplayName(user.displayName);
-    setPhone(user.phone);
-    setBarangay(user.barangay);
-    setStreetAddress(user.streetAddress);
-  }, [user.uid, user.displayName, user.phone, user.barangay, user.streetAddress]);
-
-  const handleSaveProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onUpdateProfile({
-      displayName: displayName.trim() || user.displayName,
-      phone: phone.trim(),
-      barangay,
-      streetAddress: streetAddress.trim(),
-    });
-    setSavedProfile(true);
-    window.setTimeout(() => setSavedProfile(false), 1800);
-  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-12 space-y-8">
@@ -155,109 +127,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Delivery Address Settings & App Screens Quick Launcher */}
-        <div className="lg:col-span-5 space-y-6">
-          <form
-            onSubmit={handleSaveProfile}
-            className="rounded-2xl bg-white border border-[#E4E2DC] p-5 sm:p-6 space-y-4"
-          >
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#B8294B]" />
-              <h2 className="font-serif text-xl font-bold text-[#16211B]">
-                Dagupan Delivery Preferences
-              </h2>
-            </div>
-
-            <div>
-              <label
-                htmlFor="prof-name"
-                className="block text-xs font-semibold text-[#16211B] mb-1"
-              >
-                Full Name
-              </label>
-              <input
-                id="prof-name"
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-[#FAF9F7] border border-[#D5D2CA] text-sm text-[#16211B]"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="prof-phone"
-                className="block text-xs font-semibold text-[#16211B] mb-1"
-              >
-                Mobile Number
-              </label>
-              <input
-                id="prof-phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-[#FAF9F7] border border-[#D5D2CA] text-sm text-[#16211B]"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="prof-barangay"
-                className="block text-xs font-semibold text-[#16211B] mb-1"
-              >
-                Default Barangay
-              </label>
-              <select
-                id="prof-barangay"
-                value={barangay}
-                onChange={(e) => setBarangay(e.target.value)}
-                className="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-[#FAF9F7] border border-[#D5D2CA] text-sm text-[#16211B]"
-              >
-                {DAGUPAN_BARANGAYS.map((b) => (
-                  <option key={b.name} value={b.name}>
-                    Brgy. {b.name} (₱{b.deliveryFee})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="prof-address"
-                className="block text-xs font-semibold text-[#16211B] mb-1"
-              >
-                Street & Landmark
-              </label>
-              <input
-                id="prof-address"
-                type="text"
-                value={streetAddress}
-                onChange={(e) => setStreetAddress(e.target.value)}
-                className="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-[#FAF9F7] border border-[#D5D2CA] text-sm text-[#16211B]"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full min-h-[44px] px-5 py-2.5 rounded-xl bg-[#1B4332] text-white text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
-            >
-              {savedProfile ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  <span>Preferences Saved</span>
-                </>
-              ) : (
-                <span>Save Delivery Profile</span>
-              )}
-            </button>
-          </form>
-        </div>
-
-        {/* Right Column: Saved Custom 3D Bouquets & Dagupan Order History */}
-        <div className="lg:col-span-7 space-y-8">
-          {/* Saved Custom 3D Bouquets */}
-          <section className="space-y-4">
+      {/* Saved Custom 3D Bouquets & Dagupan Order History */}
+      <div className="space-y-8">
+        {/* Saved Custom 3D Bouquets */}
+        <section className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#B8294B]" />
@@ -383,7 +256,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               </div>
             )}
           </section>
-        </div>
       </div>
     </div>
   );

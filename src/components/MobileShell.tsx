@@ -3,8 +3,6 @@ import {
   Box,
   Camera,
   Home,
-  LayoutGrid,
-  MapPin,
   ShieldCheck,
   ShoppingBag,
   Store,
@@ -118,27 +116,6 @@ export const MobileShell: React.FC<MobileShellProps> = ({
                 Screens
               </button>
             </nav>
-
-            {/* Mobile Middle Barangay Indicator + Screen Index Trigger */}
-            <div className="flex lg:hidden items-center gap-1 min-w-0">
-              <button
-                type="button"
-                onClick={() => onNavigate('cart')}
-                className="flex items-center gap-1 text-xs font-medium text-[#536159] truncate max-w-[140px] min-h-[44px] px-1.5 cursor-pointer"
-                title="Change Dagupan delivery barangay in Cart"
-              >
-                <MapPin className="w-3.5 h-3.5 text-[#B8294B] shrink-0" />
-                <span className="truncate">{selectedBarangay}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setDirectoryOpen(true)}
-                aria-label="Open all 10 screens menu"
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-[#536159] hover:text-[#16211B] cursor-pointer"
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-            </div>
 
             {/* Zone 3: Primary Action (Cart CTA) */}
             <div className="flex items-center gap-2 shrink-0">

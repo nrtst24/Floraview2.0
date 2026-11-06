@@ -3,14 +3,11 @@ import {
   ArrowRight,
   Box,
   Camera,
-  MapPin,
   Plus,
-  Search,
   Star,
 } from 'lucide-react';
 import {
   CATALOG_BOUQUETS,
-  DAGUPAN_BARANGAYS,
   DAGUPAN_SHOPS,
   IMAGES,
 } from '../data/dagupanCatalog';
@@ -42,9 +39,6 @@ const OCCASION_FILTERS = [
 ] as const;
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
-  user,
-  selectedBarangay,
-  onSelectBarangay,
   onNavigate,
   onSelectBouquet,
   onOpenIn3D,
@@ -52,22 +46,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSelectShopFilter,
 }) => {
   const [occasion, setOccasion] = useState<string>('all');
-  const [searchText, setSearchText] = useState('');
   const [addedId, setAddedId] = useState<string | null>(null);
 
-  const barangayInfo =
-    DAGUPAN_BARANGAYS.find((b) => b.name === selectedBarangay) ||
-    DAGUPAN_BARANGAYS[1];
-
   const filteredBouquets = CATALOG_BOUQUETS.filter((b) => {
-    const matchesOccasion = occasion === 'all' || b.occasion === occasion;
-    const q = searchText.trim().toLowerCase();
-    const matchesSearch =
-      !q ||
-      b.name.toLowerCase().includes(q) ||
-      b.shopName.toLowerCase().includes(q) ||
-      b.description.toLowerCase().includes(q);
-    return matchesOccasion && matchesSearch;
+    return occasion === 'all' || b.occasion === occasion;
   });
 
   const handleQuickAdd = (b: CatalogBouquet) => {
@@ -80,50 +62,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-10 space-y-10">
-      {/* Section 1: Dagupan City Delivery Context & Quick Search */}
-      <section aria-label="Dagupan City Delivery and Search" className="space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-[#E4E2DC]">
-          <div>
-            <p className="text-xs text-[#536159]">
-              {user.provider === 'guest'
-                ? 'Welcome to FloraView Dagupan'
-                : `Mabuhay, ${user.displayName}`}
-            </p>
-            <div className="flex flex-wrap items-center gap-2 mt-0.5">
-              <MapPin className="w-4 h-4 text-[#B8294B] shrink-0" />
-              <label htmlFor="home-barangay-select" className="sr-only">
-                Delivery Barangay in Dagupan City
-              </label>
-              <select
-                id="home-barangay-select"
-                value={selectedBarangay}
-                onChange={(e) => onSelectBarangay(e.target.value)}
-                className="font-semibold text-sm text-[#16211B] bg-transparent border-b border-[#D5D2CA] py-1 pr-2 focus:outline-none focus:border-[#1B4332] cursor-pointer"
-              >
-                {DAGUPAN_BARANGAYS.map((b) => (
-                  <option key={b.name} value={b.name}>
-                    Brgy. {b.name}, Dagupan City
-                  </option>
-                ))}
-              </select>
-              <span className="text-xs text-[#536159] font-mono tabular-nums">
-                · {barangayInfo.etaMinutes} min · ₱{barangayInfo.deliveryFee} rider fee
-              </span>
-            </div>
-          </div>
-
-          <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 text-[#536159] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="search"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              placeholder="Search roses, sampaguita, Lucao..."
-              className="w-full min-h-[44px] pl-10 pr-4 py-2 rounded-xl bg-white border border-[#E4E2DC] text-sm text-[#16211B] placeholder:text-[#536159] focus:outline-none focus:border-[#1B4332]"
-            />
-          </div>
-        </div>
-
+      {/* Section 1: Storefront Editorial Campaign Hero */}
+      <section aria-label="Dagupan City 3D Botanical Atelier" className="space-y-4">
         {/* Storefront Editorial Campaign Hero (Split 2-column stretch on desktop) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 rounded-2xl overflow-hidden bg-[#F1F0EC] border border-[#E4E2DC] items-stretch">
           <div className="lg:col-span-6 p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-6">
@@ -235,7 +175,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               type="button"
               onClick={() => {
                 setOccasion('all');
-                setSearchText('');
               }}
               className="mt-4 min-h-[44px] px-5 py-2 rounded-xl bg-[#1B4332] text-white text-xs font-semibold cursor-pointer"
             >

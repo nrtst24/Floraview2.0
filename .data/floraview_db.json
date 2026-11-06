@@ -1,0 +1,129 @@
+{
+  "users": [
+    {
+      "uid": "user-clara-dagupan",
+      "displayName": "Clara Reyes",
+      "email": "clara.reyes@dagupanflora.ph",
+      "passwordHash": "99107f8358b8e69b08c0e01c4ee64d698c8ba42c2912cf3063d2fcee5e37d04b3b86b76f81364fcc17af71eed70f12567fc0bfdd34e69b20c1d0b0203a120631",
+      "salt": "dagupan_flora_seed_2026",
+      "phone": "+63 917 842 3910",
+      "barangay": "Lucao",
+      "streetAddress": "184 De Venecia Rd, near CSI City Mall, Brgy. Lucao, Dagupan City",
+      "createdAt": "2026-10-18T08:30:00.000Z"
+    },
+    {
+      "uid": "user-admin-dagupan",
+      "displayName": "Dagupan Atelier Admin",
+      "email": "admin",
+      "passwordHash": "88643e4d2ac318d584a5f451b2df25990cf96d98178e7bcffc230da494616b1900afe8c8231e86a8cc10936bf89bf9f475e44b8697167b4ff50a3582457ffe02",
+      "salt": "dagupan_atelier_admin_salt_2026",
+      "phone": "+63 917 500 2026",
+      "barangay": "Poblacion Oeste",
+      "streetAddress": "Plaza Rizal & A.B. Fernandez Ave, Dagupan City",
+      "role": "admin",
+      "createdAt": "2026-10-01T08:00:00.000Z"
+    }
+  ],
+  "sessions": {
+    "41cd45a6b62e11ed13036c6a9f4a374aa3b01b3279e84bcd": "user-clara-dagupan",
+    "41c78969a8bfac1784ed02b739e791a42713b731dd00af7a": "user-admin-dagupan",
+    "b7de964a1becc6895a0b42cc4babeb6fb8ee31b557683001": "user-admin-dagupan",
+    "cd3b465f40859eb36517a1d3fe6c213a505ea92b58fdff3a": "user-admin-dagupan",
+    "cbb066984347558c936de2c322618672f29287a34ce6e7b7": "user-admin-dagupan",
+    "6ac5d5e2883105b15737d22bee7d93da342be1153cceb10a": "user-admin-dagupan",
+    "5e13b31b5f1b63953542461e1f30b3ed5dcdbe13084285c0": "user-admin-dagupan",
+    "d71d8772914bd1d4e7d03c3291b76d79297a1961a575e4b6": "user-admin-dagupan"
+  },
+  "userStates": {
+    "user-clara-dagupan": {
+      "cart": [],
+      "savedBouquets": [
+        {
+          "id": "bq-saved-101",
+          "title": "Lingayen Sunset Sampaguita & Rose",
+          "totalPrice": 2145,
+          "stemCount": 15,
+          "createdAt": "2026-10-25T10:15:00.000Z",
+          "config": {
+            "title": "Lingayen Sunset Sampaguita & Rose",
+            "stems": {
+              "rose": 5,
+              "sunflower": 2,
+              "stargazer": 1,
+              "orchid": 1,
+              "sampaguita": 3,
+              "eucalyptus": 3
+            },
+            "petalPalette": "sunset",
+            "wrapStyle": "kraft_linen",
+            "ribbonStyle": "champagne"
+          }
+        }
+      ],
+      "orders": [
+        {
+          "id": "FV_1897",
+          "recipientName": "Clara Reyes",
+          "recipientPhone": "+63 917 842 3910",
+          "barangay": "Lucao",
+          "streetLandmark": "184 De Venecia Rd, near CSI City Mall, Brgy. Lucao, Dagupan City",
+          "deliverySlot": "Express 90-Min Rider",
+          "paymentMethod": "GCash",
+          "subtotal": 2450,
+          "deliveryFee": 0,
+          "totalAmount": 2450,
+          "summaryText": "1x Lucao Stargazer & Phalaenopsis",
+          "status": "preparing",
+          "createdAt": "2026-11-06T02:12:15.735Z"
+        },
+        {
+          "id": "FV-8421",
+          "recipientName": "Elena Reyes",
+          "recipientPhone": "+63 917 842 3910",
+          "barangay": "Tapuac",
+          "streetLandmark": "72 Tapuac District Rd, near Region 1 Medical Center",
+          "deliverySlot": "Express 90-Min",
+          "paymentMethod": "GCash",
+          "status": "delivered",
+          "subtotal": 1890,
+          "deliveryFee": 65,
+          "totalAmount": 1955,
+          "summaryText": "1x Sampaguita & Capiz Blush Hand-Tie (Pantal River Botanicals)",
+          "createdAt": "2026-10-28T09:12:00.000Z"
+        },
+        {
+          "id": "FV-8490",
+          "recipientName": "Marco Bautista",
+          "recipientPhone": "+63 918 510 7724",
+          "barangay": "Bonuan Gueset",
+          "streetLandmark": "Tondaligan Blue Beach Pavilion, Brgy. Bonuan Gueset",
+          "deliverySlot": "Afternoon 1PM–5PM",
+          "paymentMethod": "Maya",
+          "status": "out_for_delivery",
+          "subtotal": 2450,
+          "deliveryFee": 0,
+          "totalAmount": 2450,
+          "summaryText": "1x Lucao Stargazer & Phalaenopsis (Lucao Garden Atelier)",
+          "createdAt": "2026-11-05T14:20:00.000Z"
+        }
+      ]
+    },
+    "user-admin-dagupan": {
+      "cart": [
+        {
+          "id": "init-sampaguita-blush",
+          "name": "Sampaguita & Capiz Blush Hand-Tie",
+          "subtitle": "Classic · 15 Stems",
+          "shopName": "Pantal River Botanicals",
+          "unitPrice": 1890,
+          "quantity": 1,
+          "image": "/src/assets/images/bouquet_sampaguita_rose_1793928797562.jpg",
+          "isCustom3D": false,
+          "sizeTier": "classic"
+        }
+      ],
+      "savedBouquets": [],
+      "orders": []
+    }
+  }
+}

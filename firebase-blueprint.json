@@ -1,0 +1,208 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private customer profile and delivery preferences for FloraView Dagupan.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 120
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "barangay": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "streetAddress": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "displayName", "email", "createdAt", "updatedAt"]
+    },
+    "SavedBouquet": {
+      "title": "SavedBouquet",
+      "description": "Custom 3D flower bouquet configuration saved by a user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "petalPalette": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "wrapStyle": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "ribbonStyle": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "totalPrice": {
+          "type": "number"
+        },
+        "stemCount": {
+          "type": "number"
+        },
+        "stems": {
+          "type": "object",
+          "description": "Map of flower species ID to stem count."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "ownerId", "title", "petalPalette", "wrapStyle", "ribbonStyle", "totalPrice", "stemCount", "createdAt"]
+    },
+    "DagupanOrder": {
+      "title": "DagupanOrder",
+      "description": "Confirmed flower bouquet order for delivery in Dagupan City.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "recipientName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "recipientPhone": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 24
+        },
+        "barangay": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64
+        },
+        "streetLandmark": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 200
+        },
+        "deliverySlot": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "paymentMethod": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "status": {
+          "type": "string",
+          "enum": ["preparing", "out_for_delivery", "delivered"]
+        },
+        "subtotal": {
+          "type": "number"
+        },
+        "deliveryFee": {
+          "type": "number"
+        },
+        "totalAmount": {
+          "type": "number"
+        },
+        "summaryText": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "ownerId", "recipientName", "recipientPhone", "barangay", "streetLandmark", "deliverySlot", "paymentMethod", "status", "subtotal", "deliveryFee", "totalAmount", "summaryText", "createdAt"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Trusted administrator marker document keyed by verified Firebase UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Trusted administrator registry for FloraView Dagupan."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private customer profile document owned by userId."
+    },
+    "/users/{userId}/bouquets/{bouquetId}": {
+      "schema": { "$ref": "#/entities/SavedBouquet" },
+      "description": "Custom 3D flower bouquets created and saved by userId."
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/DagupanOrder" },
+      "description": "Flower delivery orders placed by userId in Dagupan City."
+    }
+  }
+}

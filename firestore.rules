@@ -1,0 +1,144 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && (
+          exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+          || request.auth.token.email == 'magalongtristanquinn@gmail.com'
+        );
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'displayName', 'email', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'email', 'phone', 'barangay', 'streetAddress', 'createdAt', 'updatedAt'])
+        && data.uid is string && data.uid == userId && isValidId(data.uid)
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 120
+        && (!('phone' in data) || (data.phone is string && data.phone.size() <= 24))
+        && (!('barangay' in data) || (data.barangay is string && data.barangay.size() <= 64))
+        && (!('streetAddress' in data) || (data.streetAddress is string && data.streetAddress.size() <= 200))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSavedBouquet(data, userId, bouquetId) {
+      return data.keys().hasAll(['id', 'ownerId', 'title', 'petalPalette', 'wrapStyle', 'ribbonStyle', 'totalPrice', 'stemCount', 'createdAt'])
+        && data.keys().hasOnly(['id', 'ownerId', 'title', 'petalPalette', 'wrapStyle', 'ribbonStyle', 'totalPrice', 'stemCount', 'stems', 'createdAt'])
+        && data.id is string && data.id == bouquetId && isValidId(data.id)
+        && data.ownerId is string && data.ownerId == userId && isValidId(data.ownerId)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 80
+        && data.petalPalette is string && data.petalPalette.size() >= 1 && data.petalPalette.size() <= 40
+        && data.wrapStyle is string && data.wrapStyle.size() >= 1 && data.wrapStyle.size() <= 40
+        && data.ribbonStyle is string && data.ribbonStyle.size() >= 1 && data.ribbonStyle.size() <= 40
+        && data.totalPrice is number && data.totalPrice > 0 && data.totalPrice <= 100000
+        && data.stemCount is number && data.stemCount >= 1 && data.stemCount <= 36
+        && (!('stems' in data) || (data.stems is map && data.stems.size() <= 12))
+        && data.createdAt is timestamp;
+    }
+
+    function isValidDagupanOrder(data, userId, orderId) {
+      return data.keys().hasAll(['id', 'ownerId', 'recipientName', 'recipientPhone', 'barangay', 'streetLandmark', 'deliverySlot', 'paymentMethod', 'status', 'subtotal', 'deliveryFee', 'totalAmount', 'summaryText', 'createdAt'])
+        && data.keys().hasOnly(['id', 'ownerId', 'recipientName', 'recipientPhone', 'barangay', 'streetLandmark', 'deliverySlot', 'paymentMethod', 'status', 'subtotal', 'deliveryFee', 'totalAmount', 'summaryText', 'createdAt'])
+        && data.id is string && data.id == orderId && isValidId(data.id)
+        && data.ownerId is string && data.ownerId == userId && isValidId(data.ownerId)
+        && data.recipientName is string && data.recipientName.size() >= 1 && data.recipientName.size() <= 80
+        && data.recipientPhone is string && data.recipientPhone.size() >= 4 && data.recipientPhone.size() <= 24
+        && data.barangay is string && data.barangay.size() >= 2 && data.barangay.size() <= 64
+        && data.streetLandmark is string && data.streetLandmark.size() >= 2 && data.streetLandmark.size() <= 200
+        && data.deliverySlot is string && data.deliverySlot.size() >= 2 && data.deliverySlot.size() <= 40
+        && data.paymentMethod is string && data.paymentMethod.size() >= 2 && data.paymentMethod.size() <= 40
+        && data.status in ['preparing', 'out_for_delivery', 'delivered']
+        && data.subtotal is number && data.subtotal >= 0 && data.subtotal <= 500000
+        && data.deliveryFee is number && data.deliveryFee >= 0 && data.deliveryFee <= 5000
+        && data.totalAmount is number && data.totalAmount >= 0 && data.totalAmount <= 505000
+        && data.summaryText is string && data.summaryText.size() >= 1 && data.summaryText.size() <= 300
+        && data.createdAt is timestamp;
+    }
+
+    match /admins/{adminId} {
+      allow get: if (isOwner(adminId) || isAdmin()) && isValidId(adminId);
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /users/{userId} {
+      allow get: if (isOwner(userId) || isAdmin()) && isValidId(userId);
+      allow list: if isSignedIn() && request.auth.token.email_verified == true && request.auth.token.email == 'magalongtristanquinn@gmail.com';
+      allow create: if isOwner(userId) && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isSignedIn() && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          isAdmin() ||
+          (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'phone', 'barangay', 'streetAddress', 'updatedAt']))
+        );
+      allow delete: if false;
+
+      match /bouquets/{bouquetId} {
+        allow get: if (isOwner(userId) || isAdmin()) && isValidId(userId) && isValidId(bouquetId);
+        allow list: if isSignedIn() && (
+          resource.data.ownerId == request.auth.uid ||
+          (request.auth.token.email_verified == true && request.auth.token.email == 'magalongtristanquinn@gmail.com')
+        );
+        allow create: if isOwner(userId) && isValidId(userId) && isValidId(bouquetId)
+          && isValidSavedBouquet(incoming(), userId, bouquetId)
+          && incoming().createdAt == request.time;
+        allow update: if false;
+        allow delete: if (isOwner(userId) || isAdmin()) && isValidId(userId) && isValidId(bouquetId);
+      }
+
+      match /orders/{orderId} {
+        allow get: if (isOwner(userId) || isAdmin()) && isValidId(userId) && isValidId(orderId);
+        allow list: if isSignedIn() && (
+          resource.data.ownerId == request.auth.uid ||
+          (request.auth.token.email_verified == true && request.auth.token.email == 'magalongtristanquinn@gmail.com')
+        );
+        allow create: if isOwner(userId) && isValidId(userId) && isValidId(orderId)
+          && isValidDagupanOrder(incoming(), userId, orderId)
+          && incoming().status == 'preparing'
+          && incoming().createdAt == request.time;
+        allow update: if isSignedIn() && isValidId(userId) && isValidId(orderId)
+          && isValidDagupanOrder(incoming(), userId, orderId)
+          && incoming().id == existing().id
+          && incoming().ownerId == existing().ownerId
+          && incoming().createdAt == existing().createdAt
+          && existing().status != 'delivered'
+          && isAdmin()
+          && incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+        allow delete: if false;
+      }
+    }
+  }
+}
